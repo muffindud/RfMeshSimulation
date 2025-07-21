@@ -1,3 +1,4 @@
+import asyncio
 from os import getenv
 from uuid import uuid4
 
@@ -19,7 +20,7 @@ app = Quart(__name__)
 
 
 async def register_module():
-    async with AsyncClient as client:
+    async with AsyncClient() as client:
         await client.post(f"{NETWORK_URI}/subscribe/{ROLE}/{SELF_ID}")
 
 
@@ -37,8 +38,12 @@ async def receive():
         ...
 
 
+async def main():
+    await register_module()
+
 if __name__ == '__main__':
-    register_module()
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(main())
 
     app.run(
         host="0.0.0.0",

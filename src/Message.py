@@ -1,4 +1,3 @@
-import src.Message
 from src.Header import Header
 
 
@@ -27,5 +26,5 @@ class Message:
         ...
 
     @staticmethod
-    def create_message(bin_message: bytes) -> src.Message.Message:
+    def create_message(bin_message: bytes):
         ...

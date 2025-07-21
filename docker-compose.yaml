@@ -1,0 +1,33 @@
+services:
+  network:
+    build:
+      dockerfile: network.Dockerfile
+    ports:
+      - "$NETWORK_PORT:$NETWORK_PORT"
+    environment:
+      - NETWORK_PORT=$NETWORK_PORT
+
+  manager:
+    build:
+      dockerfile: module.Dockerfile
+    depends_on:
+      - network
+    environment:
+      - MODULE_ROLE=manager
+      - MODULE_PORT=$MODULE_PORT
+      - NETWORK_HOST=network
+      - NETWORK_PORT=$NETWORK_PORT
+
+  worker:
+    build:
+      dockerfile: module.Dockerfile
+    depends_on:
+      - network
+      - manager
+    deploy:
+      replicas: 8
+    environment:
+      - MODULE_ROLE=worker
+      - MODULE_PORT=$MODULE_PORT
+      - NETWORK_HOST=network
+      - NETWORK_PORT=$NETWORK_PORT
