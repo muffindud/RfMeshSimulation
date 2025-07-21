@@ -4,6 +4,7 @@ blinker==1.9.0
 certifi==2025.7.14
 click==8.2.1
 Flask==3.1.1
+graphviz==0.21
 h11==0.16.0
 h2==4.2.0
 hpack==4.1.0
