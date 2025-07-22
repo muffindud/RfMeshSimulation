@@ -1,10 +1,9 @@
 from os import getenv
 from random import randint, sample
 
-from quart import Quart, request, jsonify, send_file, Response
+from quart import Quart, request, jsonify, Response
 from httpx import AsyncClient
-
-import graphviz as gv
+from graphviz import Digraph
 
 
 NEIGHBORS = "neighbors"
@@ -126,16 +125,18 @@ async def send(module_id: str):
 
 @app.route("/network", methods=["GET"])
 async def get_network():
-    graph = gv.Digraph()
+    graph = Digraph()
+    connected_pairs: list[tuple[str, str]] = []
 
     for n in modules_with_neighbors:
         graph.node(n.split("-")[0], shape='circle' if n != manager_id else "doublecircle")
 
     for module_id in network.keys():
         for neighbor_id in network.get(module_id).get(NEIGHBORS):
-            graph.edge(module_id.split("-")[0], neighbor_id.split("-")[0])
+            if (neighbor_id, module_id) not in connected_pairs and (module_id, neighbor_id) not in connected_pairs:
+                graph.edge(module_id.split("-")[0], neighbor_id.split("-")[0], arrowhead="none", arrowtail="none")
+                connected_pairs.append((module_id, neighbor_id))
 
-    # return send_file(graph.pipe(format="png")), 200
     return Response(graph.pipe(format="png"), content_type="image/png")
 
 
