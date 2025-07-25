@@ -10,7 +10,7 @@ NEIGHBORS = "neighbors"
 DISTANCE = "distance"
 
 MODULE_PORT = getenv("MODULE_PORT", 5000)
-BRANCHING_FACTOR = (1, 3)
+BRANCHING_FACTOR = (1, 2)
 
 app = Quart(__name__)
 
@@ -129,12 +129,17 @@ async def get_network():
     connected_pairs: list[tuple[str, str]] = []
 
     for n in modules_with_neighbors:
-        graph.node(n.split("-")[0], shape='circle' if n != manager_id else "doublecircle")
+        graph.node(n.split("-")[0] + "\n" + str(network.get(n).get(DISTANCE)), shape='circle' if n != manager_id else "doublecircle")
 
     for module_id in network.keys():
         for neighbor_id in network.get(module_id).get(NEIGHBORS):
             if (neighbor_id, module_id) not in connected_pairs and (module_id, neighbor_id) not in connected_pairs:
-                graph.edge(module_id.split("-")[0], neighbor_id.split("-")[0], arrowhead="none", arrowtail="none")
+                graph.edge(
+                    module_id.split("-")[0] + "\n" + str(network.get(module_id).get(DISTANCE)),
+                    neighbor_id.split("-")[0] + "\n" + str(network.get(neighbor_id).get(DISTANCE)),
+                    arrowhead="none",
+                    arrowtail="none"
+                )
                 connected_pairs.append((module_id, neighbor_id))
 
     return Response(graph.pipe(format="png"), content_type="image/png")
