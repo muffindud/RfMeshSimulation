@@ -72,6 +72,9 @@ def create_random_links(module_id: str) -> None:
 def get_distance(module_id: str) -> int:
     min_distance = float("inf")
 
+    if module_id == manager_id:
+        return 0
+
     for neighbor_id in network.get(module_id).get(NEIGHBORS):
         if neighbor_id != module_id:
             min_distance = network.get(neighbor_id).get(DISTANCE) if min_distance > network.get(neighbor_id).get(DISTANCE) else min_distance
